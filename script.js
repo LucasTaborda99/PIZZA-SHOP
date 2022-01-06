@@ -80,3 +80,28 @@ function closeModal() {
 cs('.pizzaInfo--cancelButton, .pizzaInfo--cancelMobileButton').forEach((item)=>{
     item.addEventListener('click', closeModal);
 });
+
+// Evento de botão + e - de quantidade de pizzas
+c('.pizzaInfo--qtmenos').addEventListener('click', ()=>{
+    if(modalQt > 1){
+        modalQt--;
+        c('.pizzaInfo--qt').innerHTML = modalQt;
+    }
+});
+
+c('.pizzaInfo--qtmais').addEventListener('click', ()=>{
+    modalQt++;
+    c('.pizzaInfo--qt').innerHTML = modalQt;
+
+});
+
+// Evento dos botões de tamanho das pizzas
+cs('.pizzaInfo--size').forEach((size, sizeIndex)=>{
+    size.addEventListener('click', (e)=>{
+         // Remove a seleção do item do tamanho da pizza 
+         c('.pizzaInfo--size.selected').classList.remove('selected');
+         size.classList.add('selected');
+    });
+});
+
+
