@@ -1,7 +1,16 @@
 // Constantes
+const images = 'images/';
+const c = (el) => document.querySelector(el);
+const cs = (el) => document.querySelectorAll(el);
+const price = (el) => el.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+});
+
 let modalQt = 1;
-const c = (el)=>document.querySelector(el);
-const cs = (el)=>document.querySelectorAll(el);
+let cart = [];
+let modalKey = 0;
+
 
 // Lista as pizzas
 pizzaJson.map((item, index)=>{
@@ -10,8 +19,11 @@ pizzaJson.map((item, index)=>{
     let pizzaItem = c('.models .pizza-item').cloneNode(true);
     
     // Informações das pizzas
+    pizzaItem.setAttribute('data-index', index);
     pizzaItem.querySelector('.pizza-item--img img').src = item.img;
-    pizzaItem.querySelector('.pizza-item--price').innerHTML = `R$ ${item.price.toFixed(2)}`;
+    pizzaItem.querySelector('.pizza-item--priceP').innerHTML = 'Pequena: ' + price(item.price[0]);
+    pizzaItem.querySelector('.pizza-item--priceM').innerHTML = 'Média: ' + price(item.price[1]);
+    pizzaItem.querySelector('.pizza-item--priceG').innerHTML = 'Grande: ' + price(item.price[2]);
     pizzaItem.querySelector('.pizza-item--name').innerHTML = item.name;
     pizzaItem.querySelector('.pizza-item--desc').innerHTML = item.description;
 
@@ -28,14 +40,17 @@ pizzaJson.map((item, index)=>{
         // Pega a pizza clicada com suas respectivas informações
         let key = e.target.closest('.pizza-item').getAttribute('data-key');
     
-        // Declarando a constante modalQt para inicar em 1 a quantidade de pizza
+        // Declarando a variável modalQt para inicar em 1 a quantidade de pizza
         modalQt = 1;
+
+        // Declarando a variável modalKey para indicar qual é a pizza
+        modalKey = key;
 
         // Preenche as informações da pizza no modal
         c('.pizzaBig img').src = pizzaJson[key].img;
         c('.pizzaInfo h1').innerHTML = pizzaJson[key].name;
         c('.pizzaInfo--desc').innerHTML = pizzaJson[key].description;
-        c('.pizzaInfo--actualPrice').innerHTML = `R$ ${pizzaJson[key].price.toFixed(2)}`;
+        c('.pizzaInfo--actualPrice').innerHTML =  price(item.price[2]);
         
         // Remove a seleção do item do tamanho da pizza 
         c('.pizzaInfo--size.selected').classList.remove('selected');
@@ -81,7 +96,7 @@ cs('.pizzaInfo--cancelButton, .pizzaInfo--cancelMobileButton').forEach((item)=>{
     item.addEventListener('click', closeModal);
 });
 
-// Evento de botão + e - de quantidade de pizzas
+// Eventos de botão + e - de quantidade de pizzas
 c('.pizzaInfo--qtmenos').addEventListener('click', ()=>{
     if(modalQt > 1){
         modalQt--;
@@ -101,7 +116,24 @@ cs('.pizzaInfo--size').forEach((size, sizeIndex)=>{
          // Remove a seleção do item do tamanho da pizza 
          c('.pizzaInfo--size.selected').classList.remove('selected');
          size.classList.add('selected');
+         let tamanho = size.getAttribute('data-key');
+         c('.pizzaInfo--actualPrice').innerHTML = price(pizzaJson[modalKey].price[tamanho]);
     });
 });
+document.querySelector('.pizzaInfo--addButton').addEventListener('click', () => {
+
+    // Qual é o tamanho ?
+    let size = parseInt(document.querySelector('.pizzaInfo--size.selected').getAttribute('data-key'));
+
+    cart.push({
+        id:pizzaJson[modalKey].id,
+        size,
+        qt:modalQt
+    });
+
+    closeModal();
+
+});
+
 
 
