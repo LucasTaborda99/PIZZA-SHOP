@@ -125,15 +125,45 @@ document.querySelector('.pizzaInfo--addButton').addEventListener('click', () => 
     // Qual é o tamanho ?
     let size = parseInt(document.querySelector('.pizzaInfo--size.selected').getAttribute('data-key'));
 
+    // Mesma pizza com mesmo tamanho
+    let identifier = pizzaJson[modalKey].id + '@' + size;
+
+    // Verifica se já tem o item no carrinho
+    let key = cart.findIndex((item)=>item.identifier == identifier);
+
+        if(key > -1) {
+            cart[key].qt += modalQt;
+        } else {
+
     cart.push({
+        identifier,
         id:pizzaJson[modalKey].id,
         size,
         qt:modalQt
     });
+        }
+
+    updateCart();
 
     closeModal();
 
 });
+
+// Função para atualizar o carrinho
+    function updateCart() {
+        if(cart.length > 0){
+            document.querySelector('aside').classList.add('show');
+            for(let i in cart) {
+                let pizzaItem = pizzaJson.find((item) => item.id == cart[i].id); 
+                
+                console.log(pizzaItem);
+                };
+            }
+
+        else {
+            document.querySelector('aside').classList.remove('show');
+        }
+    }
 
 
 
