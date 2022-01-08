@@ -107,7 +107,6 @@ c('.pizzaInfo--qtmenos').addEventListener('click', ()=>{
 c('.pizzaInfo--qtmais').addEventListener('click', ()=>{
     modalQt++;
     c('.pizzaInfo--qt').innerHTML = modalQt;
-
 });
 
 // Evento dos botões de tamanho das pizzas
@@ -149,19 +148,89 @@ document.querySelector('.pizzaInfo--addButton').addEventListener('click', () => 
 
 });
 
+document.querySelector('.menu-openner').addEventListener('click', () => {
+    if(cart.length > 0) {
+        c('aside').style.left = '0';
+    }
+});
+
+c('.menu-closer').addEventListener('click', () => {
+    c('aside').style.left = '100vw';
+});
+
 // Função para atualizar o carrinho
     function updateCart() {
+
+        document.querySelector('.menu-openner span').innerHTML = cart.length;
+
         if(cart.length > 0){
             document.querySelector('aside').classList.add('show');
+            c('.cart').innerHTML = '';
+
+            let subtotal = 0;
+            let desconto = 0;
+            let total = 0;
+
             for(let i in cart) {
-                let pizzaItem = pizzaJson.find((item) => item.id == cart[i].id); 
-                
-                console.log(pizzaItem);
+
+                let pizzaItem = pizzaJson.find((item) => item.id == cart[i].id);
+
+                let pizzaPrice = pizzaItem.price[cart[i].size];
+
+                subtotal += pizzaPrice * cart[i].qt;
+
+                let cartItem = c('.models .cart--item').cloneNode(true);
+
+                let pizzaSizeName;
+
+                // Mostrar o tamanho
+                switch(cart[i].size) {
+                    case 0:
+                        pizzaSizeName = 'P';
+                        break;
+                    case 1:
+                        pizzaSizeName = 'M';
+                        break;
+                    case 2:
+                        pizzaSizeName = 'G';
+                        break;
+                }
+
+                let pizzaName = `${pizzaItem.name} (${pizzaSizeName})`;
+
+                // Mostrar a imagem, nome, quantidade e ação do botão de - e + da pizza no carrinho
+                cartItem.querySelector('img').src = pizzaItem.img;
+                cartItem.querySelector('.cart--item-nome').innerHTML = pizzaName;
+                cartItem.querySelector('.cart--item--qt').innerHTML = cart[i].qt;
+                cartItem.querySelector('.cart--item-qtmenos').addEventListener('click', () => {
+                    if(cart[i].qt > 1) {
+                        cart[i].qt--;
+                    } else {
+                        cart.splice(i, 1);
+                    }
+                    updateCart();
+                });
+                cartItem.querySelector('.cart--item-qtmais').addEventListener('click', () => {
+                    cart[i].qt++;
+                    updateCart();
+                });
+
+                c('.cart').append(cartItem);
+
                 };
+
+                desconto = subtotal * 0.1;
+                total = subtotal - desconto;
+
+                document.querySelector('.subtotal span:last-child').innerHTML = price(subtotal);; 
+                document.querySelector('.desconto span:last-child').innerHTML = price(desconto);;
+                document.querySelector('.total span:last-child').innerHTML = price(total);
             }
 
+        // Sair o carrinho
         else {
             document.querySelector('aside').classList.remove('show');
+            document.querySelector('aside').style.left = '100vw';
         }
     }
 
